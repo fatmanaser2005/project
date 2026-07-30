@@ -11,10 +11,10 @@ sys.path.append(
 )
 
 from data.preprocess import preprocess
+from models.evaluate import evaluate_model, save_metrics
 
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
 
 def train_model():
@@ -56,31 +56,20 @@ def train_model():
 
 
     # Evaluation
-    mae = mean_absolute_error(
+    metrics = evaluate_model(
         y_val,
         y_pred
     )
-
-    import numpy as np
-
-    rmse = np.sqrt(
-    mean_squared_error(
-        y_val,
-        y_pred
-    )
-    )
-
-    r2 = r2_score(
-        y_val,
-        y_pred
-    )
-
 
     print("\nModel Results:")
     print("----------------")
-    print("MAE:", mae)
-    print("RMSE:", rmse)
-    print("R2 Score:", r2)
+    print("MAE:", metrics["mae"])
+    print("RMSE:", metrics["rmse"])
+    print("MAPE:", metrics["mape"])
+    print("R2 Score:", metrics["r2"])
+
+    metrics_path = save_metrics(metrics)
+    print("\nEvaluation metrics saved to:", metrics_path)
 
 
     # Save model
