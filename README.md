@@ -1,106 +1,87 @@
-# Demand Forecasting Project
+# Meal Demand Prediction
 
 ## Overview
-This project builds a machine learning model to forecast product demand using historical order data and supporting features such as price, promotions, meal category, cuisine, center information, and operational area.
+This project aims to predict the number of meal orders using machine learning regression models. The solution is built around a complete data science pipeline that includes data loading, merging, preprocessing, feature engineering, model training, evaluation, and model persistence.
 
-The goal is to predict the target variable `num_orders` for future weeks using a baseline regression pipeline.
-
-## Problem Statement
-Food demand can vary significantly by week, product type, region, and marketing activity. Forecasting demand accurately helps improve inventory planning, reduce waste, and support better operational decisions.
+## Project Goal
+The main objective is to forecast meal demand accurately based on historical information such as meal characteristics, fulfillment center details, pricing, and discounts. Accurate demand prediction can support better planning, inventory management, and operational efficiency.
 
 ## Dataset
-The project uses historical data from:
-- `data/raw/train.csv`
-- `data/raw/meal_info.csv`
-- `data/raw/fulfilment_center_info.csv`
+The project uses multiple CSV files that contain information about:
+- meal details
+- fulfillment center information
+- pricing and discount values
+- target variable: number of orders
 
-### Dataset Summary
-- Rows: 456,548
-- Features: 14 input features + target column
-- Target variable: `num_orders`
-- Missing values: none after preprocessing
+The data is merged and processed before model training.
 
-## Project Structure
-```text
-project/
-├── data/
-│   ├── raw/
-│   └── processed/
-├── models/
-├── notebooks/
-├── reports/
-├── src/
-│   ├── data/
-│   │   ├── load_data.py
-│   │   ├── merge_data.py
-│   │   └── preprocess.py
-│   └── models/
-│       ├── evaluate.py
-│       ├── predict.py
-│       └── train.py
-└── requirements.txt
-```
+## Data Preprocessing
+The preprocessing pipeline includes:
+- removing duplicate rows
+- handling missing values for both categorical and numerical columns
+- creating new features such as:
+  - discount
+  - discount_percentage
+- encoding categorical variables using LabelEncoder
+- scaling numerical features using StandardScaler
+- splitting the data into training and validation sets
 
-## Installation
-1. Create and activate a virtual environment
-   ```bash
-   python -m venv .venv
-   .venv\Scripts\activate
-   ```
-2. Install dependencies
-   ```bash
-   pip install -r requirements.txt
-   ```
+## Feature Engineering
+New derived variables were added to improve model performance:
+- discount = base_price - checkout_price
+- discount_percentage = (discount / base_price) * 100
 
-## How to Run
-### Train the model
-```bash
-python src/models/train.py
-```
+These engineered features help capture the effect of pricing changes on demand.
 
-### Generate predictions
-```bash
-python src/models/predict.py
-```
+## Models Trained
+Several regression models were trained and evaluated:
+- Linear Regression
+- Decision Tree Regressor
+- Random Forest Regressor
+- Gradient Boosting Regressor
+- XGBoost Regressor
 
-## Machine Learning Pipeline
-1. Load raw data from the CSV files.
-2. Merge meal and fulfillment center information with training data.
-3. Preprocess the dataset:
-   - remove duplicates
-   - fill missing values
-   - engineer discount-related features
-   - encode categorical variables
-   - scale numeric features
-4. Split data into training and validation sets.
-5. Train a `RandomForestRegressor`.
-6. Evaluate the model using MAE, RMSE, MAPE, and R².
-7. Save the trained model and preprocessing artifacts.
+Each model was trained on the preprocessed dataset and saved as a serialized model file in the models folder.
 
-## Model
-The current baseline model uses:
-- `RandomForestRegressor`
-- `train_test_split` with a validation split
-- preprocessing steps including feature engineering and scaling
-
-The trained model is stored in:
-- `models/best_model.pkl`
-- `models/scaler.pkl`
-- `models/encoders.pkl`
-- `models/evaluation_metrics.json`
+## Evaluation Metrics
+The models were evaluated using:
+- MAE (Mean Absolute Error)
+- RMSE (Root Mean Squared Error)
+- MAPE (Mean Absolute Percentage Error)
+- R2 Score
 
 ## Results
-The current model performance on the validation set is:
+The current project reports the following sample results from the evaluation phase:
 - MAE: 69.70
-- RMSE: 147.60
-- MAPE: 49.84%
-- R² Score: 0.8572
+- RMSE: 147.59
+- R2 Score: 0.857
 
-These results are strong for a first baseline model and indicate that the model captures a large portion of demand variability.
+These values indicate that the model provides a strong prediction performance for the given dataset.
+
+## Project Structure
+- data/: contains raw and processed data files
+- src/data/: scripts for loading, merging, and preprocessing data
+- src/models/: training, evaluation, and prediction scripts for different models
+- models/: saved trained models and preprocessing artifacts
+- notebooks/: notebooks used for data understanding and EDA
+- reports/: EDA reports and generated figures
+
+## How to Run
+1. Install dependencies:
+   pip install -r requirements.txt
+2. Run the training pipeline:
+   python src/models/train.py
+3. Use the trained model for prediction through the prediction scripts in the src/models directory.
+
+## Technologies Used
+- Python
+- Pandas
+- NumPy
+- Matplotlib
+- Seaborn
+- Scikit-learn
+- Joblib
+- Jupyter Notebook
 
 ## Notes
-The project currently uses a baseline approach. Future improvements could include:
-- lag features and rolling averages
-- stronger time-based features
-- more advanced models such as gradient boosting
-- target transformation for highly skewed demand values
+This repository contains both the experimental notebooks and the reusable Python scripts for the full machine learning workflow.
